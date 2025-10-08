@@ -1,0 +1,5 @@
+Os colaboradores devem registrar o ponto ao iniciar e finalizar o expediente.
+Há uma tolerância de 10 minutos no início e término da jornada.
+O ponto deve ser registrado no aplicativo icarus.
+Faltas e atrasos devem ser justificados no prazo de 24 horas úteis com edjane ou app.
+o expediente é de 07 as 18h

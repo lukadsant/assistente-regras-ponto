@@ -5,3 +5,5 @@ pypdf
 ollama
 langchain-community
 langchain-ollama
+docx2txt
+chardet
