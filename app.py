@@ -1,10 +1,17 @@
 import streamlit as st
-from langchain_community.embeddings import OllamaEmbeddings,FakeEmbeddings
-from langchain.vectorstores import Chroma
+
+# Embeddings e vectorstore
+from langchain_ollama import OllamaEmbeddings
+from langchain_community.vectorstores import Chroma
+
+# Documentos e texto
+from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.document_loaders import TextLoader
+
+# LLM e chains
+from langchain_community.llms import Ollama
 from langchain.chains import RetrievalQA
-from langchain.llms import Ollama
+
 
 # Configuração da página
 st.set_page_config(page_title="Assistente de Regras de Ponto", page_icon="🕒")
@@ -21,8 +28,8 @@ splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 texts = splitter.split_documents(docs)
 
 # Cria embeddings e base vetorial local
-#embeddings = OllamaEmbeddings(model="llama3")
-embeddings = FakeEmbeddings(size=768)
+#embeddings = FakeEmbeddings(size=768)
+embeddings = OllamaEmbeddings(model="llama3")
 
 vectorstore = Chroma.from_documents(texts, embeddings)
 
