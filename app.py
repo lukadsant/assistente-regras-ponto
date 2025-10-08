@@ -9,8 +9,9 @@ from langchain_community.document_loaders import TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # LLM e chains
-from langchain_community.llms import Ollama
+from langchain_ollama import OllamaLLM
 from langchain.chains import RetrievalQA
+from langchain.prompts import PromptTemplate
 
 
 # Configuração da página
@@ -28,18 +29,38 @@ splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 texts = splitter.split_documents(docs)
 
 # Cria embeddings e base vetorial local
-#embeddings = FakeEmbeddings(size=768)
 embeddings = OllamaEmbeddings(model="llama3")
 
 vectorstore = Chroma.from_documents(texts, embeddings)
 
+# Configura o prompt em português
+prompt_template = """Você é um assistente que responde perguntas sobre regras de ponto de uma empresa.
+Use o contexto fornecido para responder à pergunta de forma clara e objetiva em português brasileiro.
+Se você não souber a resposta, diga "Não encontrei essa informação nas regras de ponto".
+
+Contexto: {context}
+
+Pergunta: {question}
+
+Resposta em português:"""
+
+PROMPT = PromptTemplate(
+    template=prompt_template, 
+    input_variables=["context", "question"]
+)
+
 # Configura o modelo e a cadeia de perguntas
-llm = Ollama(model="llama3")
-qa = RetrievalQA.from_chain_type(llm=llm, chain_type="stuff", retriever=vectorstore.as_retriever())
+llm = OllamaLLM(model="llama3")
+qa = RetrievalQA.from_chain_type(
+    llm=llm, 
+    chain_type="stuff", 
+    retriever=vectorstore.as_retriever(),
+    chain_type_kwargs={"prompt": PROMPT}
+)
 
 # Interface
 question = st.text_input("Pergunta:")
 if question:
     with st.spinner("Analisando..."):
-        answer = qa.run(question)
-        st.write("**Resposta:**", answer)
+        answer = qa.invoke(question)
+        st.write("**Resposta:**", answer["result"])

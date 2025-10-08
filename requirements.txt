@@ -4,3 +4,4 @@ chromadb
 pypdf
 ollama
 langchain-community
+langchain-ollama
